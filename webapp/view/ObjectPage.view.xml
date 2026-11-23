@@ -1,0 +1,233 @@
+
+<mvc:View
+    controllerName="discountrequest.controller.ObjectPage"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:form="sap.ui.layout.form"
+    height="100%">
+
+    <Page
+        id="objectPage"
+        title="Discount Request"
+        showNavButton="true"
+        navButtonPress=".onNavBack">
+
+        <content>
+            <VBox
+                id="_IDGenVBox9"
+                width="100%"
+                class="sapUiSmallMargin"
+                renderType="Bare">
+
+                <Title
+                    id="_IDGenTitle3"
+                    text="Request Information"
+                    level="H3"/>
+
+                <form:SimpleForm
+                    id="_IDGenSimpleForm"
+                    editable="true"
+                    layout="ResponsiveGridLayout"
+                    columnsL="2"
+                    columnsM="2">
+
+                    <Label id="_IDGenLabel" text="Request Number"/>
+                    <Input
+                        id="requestNumber"
+                        editable="false"
+                        placeholder="Generated automatically when saved"/>
+
+                    <Label id="_IDGenLabel1" text="Request Date"/>
+                    <DatePicker
+                        id="requestDate"
+                        editable="false"
+                        valueFormat="yyyy-MM-dd"
+                        displayFormat="dd-MM-yyyy"/>
+
+                    <Label id="_IDGenLabel2" text="Reason"/>
+                    <Input
+                        id="reason"
+                        required="true"/>
+
+                    <Label id="_IDGenLabel3" text="Supporting Details"/>
+                    <TextArea
+                        id="supportingDetails"
+                        rows="3"/>
+
+                </form:SimpleForm>
+
+                <Toolbar id="_IDGenToolbar2" design="Transparent"/>
+
+                <Title
+                    id="_IDGenTitle5"
+                    text="Dealer and Sales Information"
+                    level="H3"/>
+
+                <form:SimpleForm
+                    id="_IDGenSimpleForm1"
+                    editable="true"
+                    layout="ResponsiveGridLayout"
+                    columnsL="2"
+                    columnsM="2">
+
+                    <Label id="_IDGenLabel4" text="Dealer"/>
+                    <Select
+                        id="dealerSelect"
+                        width="100%"/>
+
+                    <Label id="_IDGenLabel5" text="Region"/>
+                    <Select
+                        id="regionSelect"
+                        width="100%"/>
+
+                    <Label id="_IDGenLabel6" text="Sales Channel"/>
+                    <Select
+                        id="salesChannelSelect"
+                        width="100%"/>
+
+                    <Label id="_IDGenLabel7" text="Valid From"/>
+                    <DatePicker
+                        id="validFrom"
+                        valueFormat="yyyy-MM-dd"
+                        displayFormat="dd-MM-yyyy"/>
+
+                    <Label id="_IDGenLabel8" text="Valid To"/>
+                    <DatePicker
+                        id="validTo"
+                        valueFormat="yyyy-MM-dd"
+                        displayFormat="dd-MM-yyyy"/>
+
+                </form:SimpleForm>
+
+                <Toolbar id="_IDGenToolbar3" design="Transparent"/>
+
+                <Toolbar id="_IDGenToolbar4">
+                    <Title
+                        id="_IDGenTitle6"
+                        text="Discount Line Items"
+                        level="H3"/>
+
+                    <ToolbarSpacer id="_IDGenToolbarSpacer4"/>
+
+                    <Button
+                        id="_IDGenButton3"
+                        text="Add Item"
+                        icon="sap-icon://add"
+                        press=".onAddLine"/>
+
+                    <Button
+                        id="_IDGenButton5"
+                        text="Remove Item"
+                        icon="sap-icon://delete"
+                        press=".onRemoveLine"/>
+                </Toolbar>
+
+                <Table
+                    id="lineItemsTable"
+                    mode="SingleSelectLeft"
+                    noDataText="No line items added"
+                    growing="true">
+
+                    <columns>
+                        <Column id="_IDGenColumn12">
+                            <Text id="_IDGenText" text="Model"/>
+                        </Column>
+
+                        <Column id="_IDGenColumn13">
+                            <Text id="_IDGenText24" text="Price Condition"/>
+                        </Column>
+
+                        <Column id="_IDGenColumn14" hAlign="End">
+                            <Text id="_IDGenText25" text="Quantity"/>
+                        </Column>
+
+                        <Column id="_IDGenColumn15" hAlign="End">
+                            <Text id="_IDGenText26" text="Base Price (₹)"/>
+                        </Column>
+
+                        <Column id="_IDGenColumn16">
+                            <Text id="_IDGenText27" text="Discount Type"/>
+                        </Column>
+
+                        <Column id="_IDGenColumn17" hAlign="End">
+                            <Text id="_IDGenText28" text="Discount Value"/>
+                        </Column>
+
+                        <Column id="_IDGenColumn18" hAlign="End">
+                            <Text id="_IDGenText29" text="Net Price (₹)"/>
+                        </Column>
+                    </columns>
+
+                </Table>
+
+                <Toolbar id="_IDGenToolbar5" design="Transparent"/>
+
+                <Title
+                    id="_IDGenTitle7"
+                    text="Price Summary"
+                    level="H3"/>
+
+                <form:SimpleForm
+                    id="_IDGenSimpleForm2"
+                    editable="false"
+                    layout="ResponsiveGridLayout"
+                    columnsL="2"
+                    columnsM="2">
+
+                    <Label id="_IDGenLabel9" text="Total Base Price"/>
+                    <Input
+                        id="totalBasePrice"
+                        editable="false"/>
+
+                    <Label id="_IDGenLabel10" text="Total Discount Price"/>
+                    <Input
+                        id="totalDiscountPrice"
+                        editable="false"/>
+
+                    <Label id="_IDGenLabel11" text="Total Net Price"/>
+                    <Input
+                        id="totalNetPrice"
+                        editable="false"/>
+
+                    <Label id="_IDGenLabel12" text="Overall Margin"/>
+                    <Input
+                        id="overallMargin"
+                        editable="false"/>
+
+                </form:SimpleForm>
+
+            </VBox>
+        </content>
+
+        <footer>
+            <OverflowToolbar id="_IDGenOverflowToolbar1">
+                <ToolbarSpacer id="_IDGenToolbarSpacer5"/>
+
+                <Button
+                    id="calculateButton"
+                    text="Calculate"
+                    icon="sap-icon://simulate"
+                    press=".onCalculate"/>
+
+                <Button
+                    id="validateButton"
+                    text="Validate"
+                    icon="sap-icon://validate"
+                    press=".onValidate"/>
+
+                <Button
+                    id="saveDraftButton"
+                    text="Save Draft"
+                    press=".onSaveDraft"/>
+
+                <Button
+                    id="submitButton"
+                    text="Submit for Approval"
+                    type="Emphasized"
+                    press=".onSubmit"/>
+
+            </OverflowToolbar>
+        </footer>
+
+    </Page>
+</mvc:View>

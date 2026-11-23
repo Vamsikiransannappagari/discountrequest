@@ -1,0 +1,56 @@
+
+<mvc:View
+    controllerName="discountrequest.controller.App"
+    displayBlock="true"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:tnt="sap.tnt">
+
+    <tnt:ToolPage id="toolPage">
+
+        <tnt:header>
+            <tnt:ToolHeader id="_IDGenToolHeader">
+                <Button id="_IDGenButton2"
+                    icon="sap-icon://menu2"
+                    type="Transparent"
+                    press="onSideNavButtonPress"/>
+
+                <Title id="_IDGenTitle1"
+                    text="Dealer Discount Management"
+                    level="H2"/>
+
+                <ToolbarSpacer id="_IDGenToolbarSpacer1"/>
+
+            
+            </tnt:ToolHeader>
+        </tnt:header>
+
+        <tnt:sideContent>
+            <tnt:SideNavigation
+                id="sideNavigation"
+                expanded="true">
+
+                <tnt:NavigationList id="_IDGenNavigationList"
+                    itemSelect="onItemSelect">
+
+                    <tnt:NavigationListItem id="_IDGenNavigationListItem1"
+                        text="Dashboard"
+                        key="dashboard"
+                        icon="sap-icon://home"/>
+
+                    <tnt:NavigationListItem id="_IDGenNavigationListItem2"
+                        text="Dealer Requests"
+                        key="requests"
+                        icon="sap-icon://request"/>
+
+                </tnt:NavigationList>
+            </tnt:SideNavigation>
+        </tnt:sideContent>
+
+        <tnt:mainContents>
+            <NavContainer id="app"/>
+        </tnt:mainContents>
+
+    </tnt:ToolPage>
+
+</mvc:View>

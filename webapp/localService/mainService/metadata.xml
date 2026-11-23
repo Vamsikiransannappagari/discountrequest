@@ -1,0 +1,1148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+        <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
+        <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/UI.xml">
+        <edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Validation.V1.xml">
+        <edmx:Include Alias="Validation" Namespace="Org.OData.Validation.V1"/>
+    </edmx:Reference>
+    <edmx:DataServices>
+        <Schema Namespace="DealerService" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+            <Annotation Term="Core.Links">
+                <Collection>
+                    <Record>
+                        <PropertyValue Property="rel" String="author"/>
+                        <PropertyValue Property="href" String="https://cap.cloud.sap"/>
+                    </Record>
+                </Collection>
+            </Annotation>
+            <EntityContainer Name="EntityContainer">
+                <EntitySet Name="PriceLists" EntityType="DealerService.PriceLists">
+                    <NavigationPropertyBinding Path="conditions" Target="PriceConditions"/>
+                </EntitySet>
+                <EntitySet Name="PriceConditions" EntityType="DealerService.PriceConditions">
+                    <NavigationPropertyBinding Path="priceList" Target="PriceLists"/>
+                    <NavigationPropertyBinding Path="model" Target="Models"/>
+                    <NavigationPropertyBinding Path="region" Target="Regions"/>
+                    <NavigationPropertyBinding Path="salesChannel" Target="SalesChannels"/>
+                    <NavigationPropertyBinding Path="dealer" Target="Dealers"/>
+                </EntitySet>
+                <EntitySet Name="Models" EntityType="DealerService.Models"/>
+                <EntitySet Name="Regions" EntityType="DealerService.Regions"/>
+                <EntitySet Name="SalesChannels" EntityType="DealerService.SalesChannels"/>
+                <EntitySet Name="Dealers" EntityType="DealerService.Dealers">
+                    <NavigationPropertyBinding Path="region" Target="Regions"/>
+                </EntitySet>
+                <EntitySet Name="DiscountRequests" EntityType="DealerService.DiscountRequests">
+                    <NavigationPropertyBinding Path="dealer" Target="Dealers"/>
+                    <NavigationPropertyBinding Path="region" Target="Regions"/>
+                    <NavigationPropertyBinding Path="salesChannel" Target="SalesChannels"/>
+                    <NavigationPropertyBinding Path="lines" Target="DiscountLines"/>
+                    <NavigationPropertyBinding Path="approvalDecisions" Target="ApprovalDecisions"/>
+                    <NavigationPropertyBinding Path="publicationLogs" Target="PricePublicationLogs"/>
+                </EntitySet>
+                <EntitySet Name="DiscountLines" EntityType="DealerService.DiscountLines">
+                    <NavigationPropertyBinding Path="discountRequest" Target="DiscountRequests"/>
+                    <NavigationPropertyBinding Path="model" Target="Models"/>
+                    <NavigationPropertyBinding Path="priceCondition" Target="PriceConditions"/>
+                </EntitySet>
+                <EntitySet Name="ApprovalMatrix" EntityType="DealerService.ApprovalMatrix">
+                    <NavigationPropertyBinding Path="region" Target="Regions"/>
+                </EntitySet>
+                <EntitySet Name="ApprovalDecisions" EntityType="DealerService.ApprovalDecisions">
+                    <NavigationPropertyBinding Path="discountRequest" Target="DiscountRequests"/>
+                    <NavigationPropertyBinding Path="approvalMatrix" Target="ApprovalMatrix"/>
+                </EntitySet>
+                <EntitySet Name="PricePublicationLogs" EntityType="DealerService.PricePublicationLogs">
+                    <NavigationPropertyBinding Path="discountRequest" Target="DiscountRequests"/>
+                </EntitySet>
+                <EntitySet Name="PriceChangeHistory" EntityType="DealerService.PriceChangeHistory">
+                    <NavigationPropertyBinding Path="priceCondition" Target="PriceConditions"/>
+                </EntitySet>
+                <FunctionImport Name="calculateNetPrice" Function="DealerService.calculateNetPrice"/>
+                <FunctionImport Name="validateMargin" Function="DealerService.validateMargin"/>
+                <ActionImport Name="activateAndExpirePrices" Action="DealerService.activateAndExpirePrices"/>
+            </EntityContainer>
+            <EntityType Name="PriceLists">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="priceListCode" Type="Edm.String" MaxLength="30"/>
+                <Property Name="name" Type="Edm.String" MaxLength="100"/>
+                <Property Name="description" Type="Edm.String" MaxLength="500"/>
+                <Property Name="currency" Type="Edm.String"/>
+                <Property Name="status" Type="Edm.String" DefaultValue="Draft"/>
+                <Property Name="validFrom" Type="Edm.Date"/>
+                <Property Name="validTo" Type="Edm.Date"/>
+                <NavigationProperty Name="conditions" Type="Collection(DealerService.PriceConditions)" Partner="priceList">
+                    <OnDelete Action="Cascade"/>
+                </NavigationProperty>
+            </EntityType>
+            <EntityType Name="PriceConditions">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="costPrice" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="conditionCode" Type="Edm.String"/>
+                <Property Name="basePrice" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="taxPercentage" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="dealerMargin" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="discountType" Type="Edm.String"/>
+                <Property Name="maximumDiscount" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="currency" Type="Edm.String"/>
+                <Property Name="validFrom" Type="Edm.Date"/>
+                <Property Name="validTo" Type="Edm.Date"/>
+                <Property Name="status" Type="Edm.String" DefaultValue="Draft"/>
+                <NavigationProperty Name="priceList" Type="DealerService.PriceLists" Partner="conditions">
+                    <ReferentialConstraint Property="priceList_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="priceList_ID" Type="Edm.Guid"/>
+                <NavigationProperty Name="model" Type="DealerService.Models">
+                    <ReferentialConstraint Property="model_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="model_ID" Type="Edm.Guid"/>
+                <NavigationProperty Name="region" Type="DealerService.Regions">
+                    <ReferentialConstraint Property="region_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="region_ID" Type="Edm.Guid"/>
+                <NavigationProperty Name="salesChannel" Type="DealerService.SalesChannels">
+                    <ReferentialConstraint Property="salesChannel_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="salesChannel_ID" Type="Edm.Guid"/>
+                <NavigationProperty Name="dealer" Type="DealerService.Dealers">
+                    <ReferentialConstraint Property="dealer_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="dealer_ID" Type="Edm.Guid"/>
+            </EntityType>
+            <EntityType Name="Models">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modelCode" Type="Edm.String"/>
+                <Property Name="modelName" Type="Edm.String"/>
+                <Property Name="productFamily" Type="Edm.String"/>
+                <Property Name="description" Type="Edm.String"/>
+                <Property Name="status" Type="Edm.String" DefaultValue="Active"/>
+            </EntityType>
+            <EntityType Name="Regions">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="regionCode" Type="Edm.String"/>
+                <Property Name="regionName" Type="Edm.String"/>
+                <Property Name="country" Type="Edm.String"/>
+                <Property Name="state" Type="Edm.String"/>
+                <Property Name="status" Type="Edm.String" DefaultValue="Active"/>
+            </EntityType>
+            <EntityType Name="SalesChannels">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="channelCode" Type="Edm.String"/>
+                <Property Name="channelName" Type="Edm.String"/>
+                <Property Name="description" Type="Edm.String"/>
+                <Property Name="status" Type="Edm.String" DefaultValue="Active"/>
+            </EntityType>
+            <EntityType Name="Dealers">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="dealerCode" Type="Edm.String"/>
+                <Property Name="dealerName" Type="Edm.String"/>
+                <Property Name="contactPerson" Type="Edm.String"/>
+                <Property Name="email" Type="Edm.String"/>
+                <Property Name="phone" Type="Edm.String"/>
+                <Property Name="address" Type="Edm.String"/>
+                <Property Name="status" Type="Edm.String" DefaultValue="Active"/>
+                <NavigationProperty Name="region" Type="DealerService.Regions">
+                    <ReferentialConstraint Property="region_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="region_ID" Type="Edm.Guid"/>
+            </EntityType>
+            <EntityType Name="DiscountRequests">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="requestNumber" Type="Edm.String"/>
+                <Property Name="requestDate" Type="Edm.Date"/>
+                <Property Name="requestedBy" Type="Edm.String"/>
+                <Property Name="reason" Type="Edm.String"/>
+                <Property Name="supportingDetails" Type="Edm.String"/>
+                <Property Name="totalBasePrice" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="totalDiscountPrice" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="totalNetPrice" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="overallMargin" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="status" Type="Edm.String" DefaultValue="Draft"/>
+                <Property Name="validFrom" Type="Edm.Date"/>
+                <Property Name="validTo" Type="Edm.Date"/>
+                <Property Name="submittedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <NavigationProperty Name="dealer" Type="DealerService.Dealers">
+                    <ReferentialConstraint Property="dealer_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="dealer_ID" Type="Edm.Guid"/>
+                <NavigationProperty Name="region" Type="DealerService.Regions">
+                    <ReferentialConstraint Property="region_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="region_ID" Type="Edm.Guid"/>
+                <NavigationProperty Name="salesChannel" Type="DealerService.SalesChannels">
+                    <ReferentialConstraint Property="salesChannel_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="salesChannel_ID" Type="Edm.Guid"/>
+                <NavigationProperty Name="lines" Type="Collection(DealerService.DiscountLines)" Partner="discountRequest">
+                    <OnDelete Action="Cascade"/>
+                </NavigationProperty>
+                <NavigationProperty Name="approvalDecisions" Type="Collection(DealerService.ApprovalDecisions)" Partner="discountRequest">
+                    <OnDelete Action="Cascade"/>
+                </NavigationProperty>
+                <NavigationProperty Name="publicationLogs" Type="Collection(DealerService.PricePublicationLogs)" Partner="discountRequest">
+                    <OnDelete Action="Cascade"/>
+                </NavigationProperty>
+            </EntityType>
+            <EntityType Name="DiscountLines">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="costPrice" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="quantity" Type="Edm.Int32"/>
+                <Property Name="basePrice" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="taxPercentage" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="dealerMargin" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="discountType" Type="Edm.String"/>
+                <Property Name="discountPercentage" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="discountAmount" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="netPrice" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="totalNetPrice" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="estimatedMargin" Type="Edm.Decimal" Scale="variable"/>
+                <NavigationProperty Name="discountRequest" Type="DealerService.DiscountRequests" Partner="lines">
+                    <ReferentialConstraint Property="discountRequest_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="discountRequest_ID" Type="Edm.Guid"/>
+                <NavigationProperty Name="model" Type="DealerService.Models">
+                    <ReferentialConstraint Property="model_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="model_ID" Type="Edm.Guid"/>
+                <NavigationProperty Name="priceCondition" Type="DealerService.PriceConditions">
+                    <ReferentialConstraint Property="priceCondition_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="priceCondition_ID" Type="Edm.Guid"/>
+            </EntityType>
+            <EntityType Name="ApprovalMatrix">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="matrixCode" Type="Edm.String"/>
+                <Property Name="productFamily" Type="Edm.String"/>
+                <Property Name="minimumDiscount" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="maximumDiscount" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="minimumMargin" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="approvalLevel" Type="Edm.String"/>
+                <Property Name="approvalSequence" Type="Edm.Int32"/>
+                <Property Name="approvalRole" Type="Edm.String"/>
+                <Property Name="requiresException" Type="Edm.Boolean" DefaultValue="false"/>
+                <Property Name="validFrom" Type="Edm.Date"/>
+                <Property Name="validTo" Type="Edm.Date"/>
+                <Property Name="status" Type="Edm.String" DefaultValue="Active"/>
+                <NavigationProperty Name="region" Type="DealerService.Regions">
+                    <ReferentialConstraint Property="region_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="region_ID" Type="Edm.Guid"/>
+            </EntityType>
+            <EntityType Name="ApprovalDecisions">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="approverId" Type="Edm.String"/>
+                <Property Name="approvalRole" Type="Edm.String"/>
+                <Property Name="approvalLevel" Type="Edm.String"/>
+                <Property Name="decision" Type="Edm.String" DefaultValue="Pending"/>
+                <Property Name="comments" Type="Edm.String"/>
+                <Property Name="decisionDate" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="sequenceNumber" Type="Edm.Int32"/>
+                <NavigationProperty Name="discountRequest" Type="DealerService.DiscountRequests" Partner="approvalDecisions">
+                    <ReferentialConstraint Property="discountRequest_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="discountRequest_ID" Type="Edm.Guid"/>
+                <NavigationProperty Name="approvalMatrix" Type="DealerService.ApprovalMatrix">
+                    <ReferentialConstraint Property="approvalMatrix_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="approvalMatrix_ID" Type="Edm.Guid"/>
+            </EntityType>
+            <EntityType Name="PricePublicationLogs">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="retryCount" Type="Edm.Int32" DefaultValue="0"/>
+                <Property Name="publicationReference" Type="Edm.String"/>
+                <Property Name="targetSystem" Type="Edm.String"/>
+                <Property Name="payload" Type="Edm.String"/>
+                <Property Name="status" Type="Edm.String" DefaultValue="Pending"/>
+                <Property Name="responseMessage" Type="Edm.String"/>
+                <Property Name="publishedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="lastAttemptAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <NavigationProperty Name="discountRequest" Type="DealerService.DiscountRequests" Partner="publicationLogs">
+                    <ReferentialConstraint Property="discountRequest_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="discountRequest_ID" Type="Edm.Guid"/>
+            </EntityType>
+            <EntityType Name="PriceChangeHistory">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="fieldName" Type="Edm.String"/>
+                <Property Name="oldValue" Type="Edm.String"/>
+                <Property Name="newValue" Type="Edm.String"/>
+                <Property Name="changeReason" Type="Edm.String"/>
+                <Property Name="changedBy" Type="Edm.String"/>
+                <Property Name="changedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <NavigationProperty Name="priceCondition" Type="DealerService.PriceConditions">
+                    <ReferentialConstraint Property="priceCondition_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="priceCondition_ID" Type="Edm.Guid"/>
+            </EntityType>
+            <ComplexType Name="NetPriceResult">
+                <Property Name="discountAmount" Type="Edm.Decimal" Precision="15" Scale="2"/>
+                <Property Name="discountPercent" Type="Edm.Decimal" Precision="7" Scale="2"/>
+                <Property Name="netPrice" Type="Edm.Decimal" Precision="15" Scale="2"/>
+                <Property Name="estimatedMargin" Type="Edm.Decimal" Precision="7" Scale="2"/>
+                <Property Name="belowFloor" Type="Edm.Boolean"/>
+            </ComplexType>
+            <Action Name="activatePriceList" IsBound="true">
+                <Parameter Name="in" Type="DealerService.PriceLists"/>
+                <ReturnType Type="Edm.String"/>
+            </Action>
+            <Action Name="deactivatePrice" IsBound="true">
+                <Parameter Name="in" Type="DealerService.PriceConditions"/>
+                <Parameter Name="reason" Type="Edm.String"/>
+                <ReturnType Type="Edm.String"/>
+            </Action>
+            <Action Name="extendPriceValidity" IsBound="true">
+                <Parameter Name="in" Type="DealerService.PriceConditions"/>
+                <Parameter Name="newValidTo" Type="Edm.Date"/>
+                <Parameter Name="reason" Type="Edm.String"/>
+                <ReturnType Type="Edm.String"/>
+            </Action>
+            <Action Name="submitDiscount" IsBound="true">
+                <Parameter Name="in" Type="DealerService.DiscountRequests"/>
+                <ReturnType Type="Edm.String"/>
+            </Action>
+            <Action Name="approveDiscount" IsBound="true">
+                <Parameter Name="in" Type="DealerService.DiscountRequests"/>
+                <Parameter Name="comments" Type="Edm.String"/>
+                <ReturnType Type="Edm.String"/>
+            </Action>
+            <Action Name="rejectDiscount" IsBound="true">
+                <Parameter Name="in" Type="DealerService.DiscountRequests"/>
+                <Parameter Name="comments" Type="Edm.String"/>
+                <ReturnType Type="Edm.String"/>
+            </Action>
+            <Action Name="activatePrice" IsBound="true">
+                <Parameter Name="in" Type="DealerService.DiscountRequests"/>
+                <ReturnType Type="Edm.String"/>
+            </Action>
+            <Function Name="calculateNetPrice" IsBound="false" IsComposable="false">
+                <Parameter Name="priceCondition" Type="Edm.Guid"/>
+                <Parameter Name="discountType" Type="Edm.String"/>
+                <Parameter Name="discountValue" Type="Edm.Decimal" Scale="variable"/>
+                <ReturnType Type="DealerService.NetPriceResult"/>
+            </Function>
+            <Function Name="validateMargin" IsBound="false" IsComposable="false">
+                <Parameter Name="priceCondition" Type="Edm.Guid"/>
+                <Parameter Name="discountPercentage" Type="Edm.Decimal" Scale="variable"/>
+                <ReturnType Type="DealerService.NetPriceResult"/>
+            </Function>
+            <Action Name="activateAndExpirePrices" IsBound="false">
+                <ReturnType Type="Edm.String"/>
+            </Action>
+            <Annotations Target="DealerService.PriceLists/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceLists/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceLists/createdBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceLists/modifiedAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Changed On"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceLists/modifiedBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Changed By"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceLists/priceListCode">
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceLists/name">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceLists/status">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Draft"/>
+                            <PropertyValue Property="Value" String="Draft"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Active"/>
+                            <PropertyValue Property="Value" String="Active"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Inactive"/>
+                            <PropertyValue Property="Value" String="Inactive"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DealerService.PriceLists/validFrom">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceLists/validTo">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceConditions/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceConditions/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceConditions/createdBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceConditions/modifiedAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Changed On"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceConditions/modifiedBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Changed By"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceConditions/costPrice">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceConditions/conditionCode">
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceConditions/basePrice">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceConditions/taxPercentage">
+                <Annotation Term="Validation.Minimum" Int="0"/>
+                <Annotation Term="Validation.Maximum" Int="100"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceConditions/dealerMargin">
+                <Annotation Term="Validation.Minimum" Int="0"/>
+                <Annotation Term="Validation.Maximum" Int="100"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceConditions/discountType">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Percentage"/>
+                            <PropertyValue Property="Value" String="Percentage"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Amount"/>
+                            <PropertyValue Property="Value" String="Amount"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DealerService.PriceConditions/maximumDiscount">
+                <Annotation Term="Validation.Minimum" Int="0"/>
+                <Annotation Term="Validation.Maximum" Int="100"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceConditions/validFrom">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceConditions/validTo">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceConditions/status">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Draft"/>
+                            <PropertyValue Property="Value" String="Draft"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Active"/>
+                            <PropertyValue Property="Value" String="Active"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Expired"/>
+                            <PropertyValue Property="Value" String="Expired"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Inactive"/>
+                            <PropertyValue Property="Value" String="Inactive"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DealerService.Models/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.Models/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="DealerService.Models/createdBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="DealerService.Models/modifiedAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Changed On"/>
+            </Annotations>
+            <Annotations Target="DealerService.Models/modifiedBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Changed By"/>
+            </Annotations>
+            <Annotations Target="DealerService.Models/status">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Active"/>
+                            <PropertyValue Property="Value" String="Active"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Inactive"/>
+                            <PropertyValue Property="Value" String="Inactive"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DealerService.Regions/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.Regions/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="DealerService.Regions/createdBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="DealerService.Regions/modifiedAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Changed On"/>
+            </Annotations>
+            <Annotations Target="DealerService.Regions/modifiedBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Changed By"/>
+            </Annotations>
+            <Annotations Target="DealerService.Regions/status">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Active"/>
+                            <PropertyValue Property="Value" String="Active"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Inactive"/>
+                            <PropertyValue Property="Value" String="Inactive"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DealerService.SalesChannels/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.SalesChannels/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="DealerService.SalesChannels/createdBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="DealerService.SalesChannels/modifiedAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Changed On"/>
+            </Annotations>
+            <Annotations Target="DealerService.SalesChannels/modifiedBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Changed By"/>
+            </Annotations>
+            <Annotations Target="DealerService.SalesChannels/status">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Active"/>
+                            <PropertyValue Property="Value" String="Active"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Inactive"/>
+                            <PropertyValue Property="Value" String="Inactive"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DealerService.Dealers/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.Dealers/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="DealerService.Dealers/createdBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="DealerService.Dealers/modifiedAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Changed On"/>
+            </Annotations>
+            <Annotations Target="DealerService.Dealers/modifiedBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Changed By"/>
+            </Annotations>
+            <Annotations Target="DealerService.Dealers/status">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Active"/>
+                            <PropertyValue Property="Value" String="Active"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Inactive"/>
+                            <PropertyValue Property="Value" String="Inactive"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountRequests/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountRequests/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountRequests/createdBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountRequests/modifiedAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Changed On"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountRequests/modifiedBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Changed By"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountRequests/requestNumber">
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountRequests/totalBasePrice">
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountRequests/totalDiscountPrice">
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountRequests/totalNetPrice">
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountRequests/overallMargin">
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Validation.Minimum" Int="0"/>
+                <Annotation Term="Validation.Maximum" Int="100"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountRequests/status">
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Draft"/>
+                            <PropertyValue Property="Value" String="Draft"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="PendingApproval"/>
+                            <PropertyValue Property="Value" String="PendingApproval"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Approved"/>
+                            <PropertyValue Property="Value" String="Approved"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Rejected"/>
+                            <PropertyValue Property="Value" String="Rejected"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Active"/>
+                            <PropertyValue Property="Value" String="Active"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Expired"/>
+                            <PropertyValue Property="Value" String="Expired"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountRequests/submittedAt">
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountLines/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountLines/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountLines/createdBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountLines/modifiedAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Changed On"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountLines/modifiedBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Changed By"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountLines/quantity">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountLines/taxPercentage">
+                <Annotation Term="Validation.Minimum" Int="0"/>
+                <Annotation Term="Validation.Maximum" Int="100"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountLines/discountType">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Percentage"/>
+                            <PropertyValue Property="Value" String="Percentage"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Amount"/>
+                            <PropertyValue Property="Value" String="Amount"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountLines/discountAmount">
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountLines/netPrice">
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountLines/totalNetPrice">
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.DiscountLines/estimatedMargin">
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.ApprovalMatrix/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.ApprovalMatrix/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="DealerService.ApprovalMatrix/createdBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="DealerService.ApprovalMatrix/modifiedAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Changed On"/>
+            </Annotations>
+            <Annotations Target="DealerService.ApprovalMatrix/modifiedBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Changed By"/>
+            </Annotations>
+            <Annotations Target="DealerService.ApprovalMatrix/minimumDiscount">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+                <Annotation Term="Validation.Minimum" Int="0"/>
+                <Annotation Term="Validation.Maximum" Int="100"/>
+            </Annotations>
+            <Annotations Target="DealerService.ApprovalMatrix/maximumDiscount">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+                <Annotation Term="Validation.Minimum" Int="0"/>
+                <Annotation Term="Validation.Maximum" Int="100"/>
+            </Annotations>
+            <Annotations Target="DealerService.ApprovalMatrix/minimumMargin">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+                <Annotation Term="Validation.Minimum" Int="0"/>
+                <Annotation Term="Validation.Maximum" Int="100"/>
+            </Annotations>
+            <Annotations Target="DealerService.ApprovalMatrix/approvalLevel">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="RegionalManager"/>
+                            <PropertyValue Property="Value" String="Regional Manager"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="FinanceApprover"/>
+                            <PropertyValue Property="Value" String="Finance Approver"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DealerService.ApprovalMatrix/status">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Active"/>
+                            <PropertyValue Property="Value" String="Active"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Inactive"/>
+                            <PropertyValue Property="Value" String="Inactive"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DealerService.ApprovalDecisions/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.ApprovalDecisions/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="DealerService.ApprovalDecisions/createdBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="DealerService.ApprovalDecisions/modifiedAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Changed On"/>
+            </Annotations>
+            <Annotations Target="DealerService.ApprovalDecisions/modifiedBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Changed By"/>
+            </Annotations>
+            <Annotations Target="DealerService.ApprovalDecisions/approvalLevel">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="RegionalManager"/>
+                            <PropertyValue Property="Value" String="Regional Manager"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="FinanceApprover"/>
+                            <PropertyValue Property="Value" String="Finance Approver"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DealerService.ApprovalDecisions/decision">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Pending"/>
+                            <PropertyValue Property="Value" String="Pending"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Approved"/>
+                            <PropertyValue Property="Value" String="Approved"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Rejected"/>
+                            <PropertyValue Property="Value" String="Rejected"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DealerService.PricePublicationLogs/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.PricePublicationLogs/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="DealerService.PricePublicationLogs/createdBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="DealerService.PricePublicationLogs/modifiedAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Changed On"/>
+            </Annotations>
+            <Annotations Target="DealerService.PricePublicationLogs/modifiedBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Changed By"/>
+            </Annotations>
+            <Annotations Target="DealerService.PricePublicationLogs/status">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Pending"/>
+                            <PropertyValue Property="Value" String="Pending"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Success"/>
+                            <PropertyValue Property="Value" String="Success"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Failed"/>
+                            <PropertyValue Property="Value" String="Failed"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DealerService.PriceChangeHistory/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceChangeHistory/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceChangeHistory/createdBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceChangeHistory/modifiedAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Changed On"/>
+            </Annotations>
+            <Annotations Target="DealerService.PriceChangeHistory/modifiedBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Changed By"/>
+            </Annotations>
+            <Annotations Target="DealerService.calculateNetPrice(Edm.Guid,Edm.String,Edm.Decimal)/priceCondition">
+                <Annotation Term="Core.OptionalParameter">
+                    <Record Type="Core.OptionalParameterType"/>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DealerService.calculateNetPrice(Edm.Guid,Edm.String,Edm.Decimal)/discountType">
+                <Annotation Term="Core.OptionalParameter">
+                    <Record Type="Core.OptionalParameterType"/>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DealerService.calculateNetPrice(Edm.Guid,Edm.String,Edm.Decimal)/discountValue">
+                <Annotation Term="Core.OptionalParameter">
+                    <Record Type="Core.OptionalParameterType"/>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DealerService.validateMargin(Edm.Guid,Edm.Decimal)/priceCondition">
+                <Annotation Term="Core.OptionalParameter">
+                    <Record Type="Core.OptionalParameterType"/>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="DealerService.validateMargin(Edm.Guid,Edm.Decimal)/discountPercentage">
+                <Annotation Term="Core.OptionalParameter">
+                    <Record Type="Core.OptionalParameterType"/>
+                </Annotation>
+            </Annotations>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>

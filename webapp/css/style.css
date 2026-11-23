@@ -1,0 +1,367 @@
+
+/* =====================================================
+   DASHBOARD - MAIN PAGE
+===================================================== */
+
+.dashboardContent {
+    width: 100%;
+    padding: 22px 26px !important;
+    box-sizing: border-box;
+    background: #f5f7fa !important;
+}
+
+/* =====================================================
+   DASHBOARD HEADING
+===================================================== */
+
+.dashboardHeading {
+    color: #1d3557 !important;
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 4px !important;
+}
+
+.dashboardDescription {
+    color: #64748b !important;
+    font-size: 0.9rem !important;
+    margin-bottom: 18px !important;
+}
+
+/* =====================================================
+   DASHBOARD TILES - SIX TILES IN ONE ROW
+===================================================== */
+
+.dashboardTiles {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+    width: 100% !important;
+    margin-top: 8px !important;
+    margin-bottom: 26px !important;
+    overflow-x: auto !important;
+    box-sizing: border-box !important;
+}
+
+.dashboardTileWrapper {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    width: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* =====================================================
+   DASHBOARD TILE DESIGN
+===================================================== */
+
+.dashboardTile {
+    width: 100% !important;
+    height: 9rem !important;
+    min-height: 9rem !important;
+
+    background: #ffffff !important;
+
+    border: 1px solid #e2e8f0 !important;
+    border-top: 4px solid #0a6ed1 !important;
+    border-radius: 12px !important;
+
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+
+    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.06) !important;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease !important;
+}
+
+.dashboardTile:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 7px 16px rgba(15, 23, 42, 0.11) !important;
+}
+
+/* Tile header */
+
+.dashboardTile .sapMGTHdrContent {
+    padding: 12px 12px 2px 12px !important;
+}
+
+.dashboardTile .sapMGTHdrTxt {
+    color: #1e293b !important;
+    font-size: 0.88rem !important;
+    font-weight: 700 !important;
+}
+
+.dashboardTile .sapMGTSubHdrTxt {
+    color: #64748b !important;
+    font-size: 0.73rem !important;
+}
+
+/* Tile numeric content */
+
+.dashboardTile .sapMNC {
+    padding: 0 10px !important;
+}
+
+.dashboardTile .sapMNCValue {
+    font-size: 1.8rem !important;
+    font-weight: 500 !important;
+}
+
+.dashboardTile .sapMNCIconImage {
+    font-size: 1.45rem !important;
+}
+
+/* =====================================================
+   INDIVIDUAL TILE ACCENT COLOURS
+===================================================== */
+
+.dashboardTileWrapper:nth-child(1) .dashboardTile {
+    border-top-color: #0a6ed1 !important;
+}
+
+.dashboardTileWrapper:nth-child(2) .dashboardTile {
+    border-top-color: #e9730c !important;
+}
+
+.dashboardTileWrapper:nth-child(3) .dashboardTile {
+    border-top-color: #188918 !important;
+}
+
+.dashboardTileWrapper:nth-child(4) .dashboardTile {
+    border-top-color: #bb0000 !important;
+}
+
+.dashboardTileWrapper:nth-child(5) .dashboardTile {
+    border-top-color: #64748b !important;
+}
+
+.dashboardTileWrapper:nth-child(6) .dashboardTile {
+    border-top-color: #8e44ad !important;
+}
+
+/* =====================================================
+   RECENT DISCOUNT REQUESTS CARD
+===================================================== */
+
+.dashboardRecent {
+    width: 100% !important;
+    max-width: 1400px;
+
+    padding: 14px 18px !important;
+    margin-bottom: 22px !important;
+
+    box-sizing: border-box !important;
+
+    background: #ffffff !important;
+
+    border: 1px solid #e1e7ef !important;
+    border-radius: 12px !important;
+
+    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.05) !important;
+}
+
+/* =====================================================
+   RECENT REQUESTS TOOLBAR
+===================================================== */
+
+.dashboardRecentToolbar {
+    min-height: 48px !important;
+    padding: 0 4px !important;
+
+    background: transparent !important;
+
+    border-bottom: 1px solid #e5eaf0 !important;
+
+    margin-bottom: 8px !important;
+}
+
+.dashboardRecentToolbar .sapMTitle {
+    color: #1d3557 !important;
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+}
+
+.dashboardRecentToolbar .sapMBtn .sapMBtnInner {
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+}
+
+/* =====================================================
+   RECENT REQUESTS TABLE
+===================================================== */
+
+.dashboardRecent .sapMListTbl {
+    width: 100% !important;
+    background: #ffffff !important;
+    border-collapse: collapse !important;
+}
+
+/* Table header */
+
+.dashboardRecent .sapMListTblHeaderCell {
+    padding: 11px 12px !important;
+    background: #f8fafc !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.dashboardRecent .sapMListTblHeaderCell .sapMText {
+    color: #475467 !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+}
+
+/* Table rows */
+
+.dashboardRecent .sapMListTblCell {
+    padding: 12px !important;
+    vertical-align: middle !important;
+    border-bottom: 1px solid #edf0f4 !important;
+}
+
+.dashboardRecent .sapMListTblCell .sapMText {
+    color: #344054 !important;
+    font-size: 0.86rem !important;
+}
+
+/* Request number */
+
+.dashboardRecent .sapMListTblCell:first-child .sapMText {
+    color: #0a6ed1 !important;
+    font-weight: 600 !important;
+}
+
+/* Net price */
+
+.dashboardRecent .sapMObjectNumberText {
+    color: #1e293b !important;
+    font-size: 0.88rem !important;
+    font-weight: 700 !important;
+}
+
+/* Status */
+
+.dashboardRecent .sapMObjStatus {
+    font-size: 0.82rem !important;
+}
+
+/* Hover */
+
+.dashboardRecent .sapMListTblRow:hover {
+    background: #f8fafc !important;
+}
+
+/* Empty table */
+
+.dashboardRecent .sapMListNoData {
+    color: #64748b !important;
+    padding: 25px !important;
+}
+
+/* =====================================================
+   RESPONSIVE - TABLET
+===================================================== */
+
+@media (max-width: 1024px) {
+
+    .dashboardContent {
+        padding: 18px !important;
+    }
+
+    .dashboardTiles {
+        gap: 10px !important;
+    }
+
+    .dashboardTile .sapMGTHdrContent {
+        padding: 10px 8px 2px 8px !important;
+    }
+
+    .dashboardTile .sapMGTHdrTxt {
+        font-size: 0.78rem !important;
+    }
+
+    .dashboardTile .sapMGTSubHdrTxt {
+        font-size: 0.68rem !important;
+    }
+
+    .dashboardTile .sapMNCValue {
+        font-size: 1.5rem !important;
+    }
+
+    .dashboardTile .sapMNCIconImage {
+        font-size: 1.2rem !important;
+    }
+
+    .dashboardRecent {
+        max-width: 100% !important;
+    }
+}
+
+/* =====================================================
+   RESPONSIVE - MOBILE
+===================================================== */
+
+@media (max-width: 600px) {
+
+    .dashboardContent {
+        padding: 12px !important;
+    }
+
+    .dashboardHeading {
+        font-size: 1.25rem !important;
+    }
+
+    .dashboardDescription {
+        font-size: 0.82rem !important;
+    }
+
+    .dashboardTiles {
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        gap: 10px !important;
+        padding-bottom: 8px !important;
+    }
+
+    .dashboardTileWrapper {
+        flex: 0 0 155px !important;
+        width: 155px !important;
+        min-width: 155px !important;
+    }
+
+    .dashboardTile {
+        height: 8.5rem !important;
+        min-height: 8.5rem !important;
+    }
+
+    .dashboardRecent {
+        padding: 8px !important;
+    }
+
+    .dashboardRecentToolbar .sapMTitle {
+        font-size: 0.95rem !important;
+    }
+
+    .dashboardRecent .sapMListTblCell,
+    .dashboardRecent .sapMListTblHeaderCell {
+        padding: 8px !important;
+    }
+
+    .dashboardRecent .sapMListTblCell .sapMText {
+        font-size: 0.75rem !important;
+    }
+}
+
+/* =====================================================
+   SMALL MOBILE
+===================================================== */
+
+@media (max-width: 380px) {
+
+    .dashboardTileWrapper {
+        flex: 0 0 145px !important;
+        width: 145px !important;
+        min-width: 145px !important;
+    }
+}
