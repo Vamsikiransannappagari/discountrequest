@@ -1,367 +1,906 @@
+/* =====================================================
+   DEALER DISCOUNT MANAGEMENT - COMPLETE STYLESHEET
+   Sections
+     1. Design tokens
+     2. App shell (header + side navigation)
+     3. Dashboard (heading, tiles, recent requests)
+     4. Requests list page   (classes: dr*)
+     5. Discount request object page (classes: op*)
+   Single file. Remove all earlier CSS files/blocks.
+===================================================== */
+
 
 /* =====================================================
-   DASHBOARD - MAIN PAGE
+   1. DESIGN TOKENS
+===================================================== */
+:root {
+    --dd-ink: #14243d;
+    --dd-text: #344054;
+    --dd-muted: #66758c;
+    --dd-faint: #98a2b3;
+    --dd-line: #e3e8f0;
+    --dd-bg: #f3f5f9;
+    --dd-surface: #ffffff;
+    --dd-brand: #103f7a;
+    --dd-brand-mid: #1f63b5;
+    --dd-brand-soft: #e8eefb;
+
+    --dd-total: #2563eb;
+    --dd-pending: #d97706;
+    --dd-approved: #1f8a4f;
+    --dd-rejected: #d32f2f;
+    --dd-draft: #6554c0;
+    --dd-expired: #a13cb5;
+
+    --dd-radius: 14px;
+    --dd-shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 4px 14px rgba(16, 24, 40, 0.05);
+}
+
+
+/* =====================================================
+   2. APP SHELL
+===================================================== */
+
+/* ---------- Header ---------- */
+.appHeader,
+.sapTntToolHeader {
+    background: var(--dd-brand) !important;
+    border: none !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+}
+
+.appHeader .sapMTitle,
+.appHeader .sapMText,
+.sapTntToolHeader .sapMTitle,
+.sapTntToolHeader .sapMText {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+.appHeader .sapMBtnIcon,
+.sapTntToolHeader .sapMBtnIcon {
+    color: #ffffff !important;
+}
+
+.appHeader .sapMBtnInner,
+.sapTntToolHeader .sapMBtnInner {
+    background: transparent !important;
+    border-color: transparent !important;
+}
+
+.sapTntToolPageMain {
+    background: var(--dd-bg) !important;
+}
+
+/* ---------- Side navigation (scoped to .appSideNav) ----------
+   Targets ARIA roles/states so it works across UI5 versions. */
+
+.appSideNav,
+.appSideNav .sapTntNL,
+.appSideNav ul {
+    background: #fbfcfe !important;
+}
+
+.appSideNav {
+    border-right: 1px solid #e6ebf2 !important;
+}
+
+.appSideNav ul {
+    padding: 12px 10px !important;
+}
+
+/* Rows */
+.appSideNav :is([role="treeitem"], .sapTntNLIFirstLevel, .sapTntNavLIItem) {
+    height: 42px !important;
+    margin: 0 0 4px !important;
+    border-radius: 10px !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    box-sizing: border-box !important;
+    transition: background-color 0.15s ease;
+}
+
+.appSideNav :is([role="treeitem"], .sapTntNLIFirstLevel, .sapTntNavLIItem) :is(.sapMText, .sapTntNLIItemText, .sapTntNavLIText) {
+    color: #3a4a60 !important;
+    font-weight: 500 !important;
+}
+
+/* Icons: small, light chip */
+.appSideNav :is([role="treeitem"], .sapTntNLIFirstLevel, .sapTntNavLIItem) .sapUiIcon {
+    width: 28px !important;
+    height: 28px !important;
+    line-height: 28px !important;
+    border-radius: 8px;
+    background: #eef3fb !important;
+    color: #4a6285 !important;
+    text-align: center;
+}
+
+/* Hover */
+.appSideNav :is([role="treeitem"], .sapTntNLIFirstLevel, .sapTntNavLIItem):hover {
+    background: #eaf1fb !important;
+}
+
+/* Selected: pale blue row, blue text, thin accent bar, solid icon chip */
+.appSideNav [aria-selected="true"],
+.appSideNav [aria-selected="true"]:hover,
+.appSideNav .sapTntNLISelected,
+.appSideNav .sapTntNavLIItemSelected {
+    background: linear-gradient(90deg, #d9e7fc 0%, #ecf3fe 100%) !important;
+    box-shadow: inset 4px 0 0 var(--dd-brand-mid) !important;
+}
+
+.appSideNav [aria-selected="true"] :is(.sapMText, .sapTntNLIItemText, .sapTntNavLIText),
+.appSideNav .sapTntNLISelected :is(.sapMText, .sapTntNLIItemText),
+.appSideNav .sapTntNavLIItemSelected :is(.sapMText, .sapTntNavLIText) {
+    color: #0f3d7a !important;
+    font-weight: 600 !important;
+}
+
+.appSideNav [aria-selected="true"] .sapUiIcon,
+.appSideNav .sapTntNLISelected .sapUiIcon,
+.appSideNav .sapTntNavLIItemSelected .sapUiIcon {
+    background: var(--dd-brand-mid) !important;
+    color: #ffffff !important;
+}
+
+/* Soft focus ring for keyboard users */
+.appSideNav :is([role="treeitem"], .sapTntNLIFirstLevel):focus {
+    outline: none !important;
+}
+
+.appSideNav :is([role="treeitem"], .sapTntNLIFirstLevel):focus-visible {
+    outline: 2px solid #8db8f2 !important;
+    outline-offset: -2px !important;
+}
+
+.appSideNav :is([role="treeitem"], .sapTntNLIFirstLevel)::before,
+.appSideNav :is([role="treeitem"], .sapTntNLIFirstLevel)::after {
+    border: 0 !important;
+}
+
+
+/* =====================================================
+   3. DASHBOARD
 ===================================================== */
 
 .dashboardContent {
     width: 100%;
-    padding: 22px 26px !important;
+    max-width: 1280px;
+    padding: 28px 32px 40px !important;
     box-sizing: border-box;
-    background: #f5f7fa !important;
+    background: var(--dd-bg) !important;
 }
 
-/* =====================================================
-   DASHBOARD HEADING
-===================================================== */
-
 .dashboardHeading {
-    color: #1d3557 !important;
-    font-size: 1.5rem !important;
+    color: var(--dd-ink) !important;
+    font-size: 1.65rem !important;
     font-weight: 700 !important;
+    letter-spacing: -0.01em;
     margin-bottom: 4px !important;
 }
 
 .dashboardDescription {
-    color: #64748b !important;
-    font-size: 0.9rem !important;
-    margin-bottom: 18px !important;
+    color: var(--dd-muted) !important;
+    font-size: 0.95rem !important;
+    margin-bottom: 22px !important;
 }
 
-/* =====================================================
-   DASHBOARD TILES - SIX TILES IN ONE ROW
-===================================================== */
+/* ---------- Statistic tiles (3 per row) ----------
+   Balanced style: soft status tint, tinted border, coloured number,
+   light icon chip. Visible colour without being heavy. */
 
 .dashboardTiles {
     display: flex !important;
     flex-direction: row !important;
-    flex-wrap: nowrap !important;
+    flex-wrap: wrap !important;
     align-items: stretch !important;
-    gap: 14px !important;
+    gap: 18px !important;
     width: 100% !important;
-    margin-top: 8px !important;
-    margin-bottom: 26px !important;
-    overflow-x: auto !important;
+    margin: 0 0 28px !important;
+    overflow: visible !important;
     box-sizing: border-box !important;
 }
 
-.dashboardTileWrapper {
-    flex: 1 1 0 !important;
-    min-width: 0 !important;
-    width: 0 !important;
-    margin: 0 !important;
+.dashboardTileCard {
+    --accent: var(--dd-total);
+    --tint: #eaf1ff;
+    --edge: #d3e0fa;
+    position: relative;
+    flex: 1 1 calc(33.333% - 18px);
+    min-width: 240px;
+    min-height: 156px;
+    padding: 20px 22px !important;
     box-sizing: border-box !important;
+    justify-content: space-between;
+    overflow: hidden;
+
+    background: linear-gradient(150deg, var(--tint) 0%, #ffffff 72%) !important;
+    border: 1px solid var(--edge) !important;
+    border-radius: var(--dd-radius) !important;
+    box-shadow: var(--dd-shadow) !important;
 }
 
-/* =====================================================
-   DASHBOARD TILE DESIGN
-===================================================== */
-
-.dashboardTile {
-    width: 100% !important;
-    height: 9rem !important;
-    min-height: 9rem !important;
-
-    background: #ffffff !important;
-
-    border: 1px solid #e2e8f0 !important;
-    border-top: 4px solid #0a6ed1 !important;
-    border-radius: 12px !important;
-
-    overflow: hidden !important;
-    box-sizing: border-box !important;
-
-    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.06) !important;
-
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease !important;
+/* Thin colour rule along the top edge */
+.dashboardTileCard::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--accent);
 }
 
-.dashboardTile:hover {
-    transform: translateY(-3px) !important;
-    box-shadow: 0 7px 16px rgba(15, 23, 42, 0.11) !important;
+/* Soft corner circle in the status colour */
+.dashboardTileCard::after {
+    content: "";
+    position: absolute;
+    right: -2.5rem;
+    bottom: -2.5rem;
+    width: 8rem;
+    height: 8rem;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.07;
+    pointer-events: none;
 }
 
-/* Tile header */
+/* Status accent + tint */
+.totalCard    { --accent: var(--dd-total);    --tint: #eaf1ff; --edge: #d3e0fa; }
+.pendingCard  { --accent: var(--dd-pending);  --tint: #fff2df; --edge: #f6dcb8; }
+.approvedCard,
+.activeCard   { --accent: var(--dd-approved); --tint: #e7f6ed; --edge: #c8e7d4; }
+.rejectedCard { --accent: var(--dd-rejected); --tint: #feebeb; --edge: #f4cbcb; }
+.draftCard    { --accent: var(--dd-draft);    --tint: #f0edff; --edge: #dad4f6; }
+.expiredCard  { --accent: var(--dd-expired);  --tint: #f8ebfc; --edge: #e9cff1; }
 
-.dashboardTile .sapMGTHdrContent {
-    padding: 12px 12px 2px 12px !important;
-}
-
-.dashboardTile .sapMGTHdrTxt {
-    color: #1e293b !important;
-    font-size: 0.88rem !important;
+.tileLabel {
+    color: var(--dd-ink) !important;
+    font-size: 1rem !important;
     font-weight: 700 !important;
 }
 
-.dashboardTile .sapMGTSubHdrTxt {
-    color: #64748b !important;
-    font-size: 0.73rem !important;
+.tileSubtitle {
+    color: var(--dd-muted) !important;
+    font-size: 0.82rem !important;
+    margin-top: 3px !important;
 }
 
-/* Tile numeric content */
-
-.dashboardTile .sapMNC {
-    padding: 0 10px !important;
+.tileNumber {
+    color: var(--accent) !important;
+    font-size: 2.5rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    letter-spacing: -0.02em;
+    margin-top: 14px !important;
+    font-variant-numeric: tabular-nums;
 }
 
-.dashboardTile .sapMNCValue {
-    font-size: 1.8rem !important;
-    font-weight: 500 !important;
+.tileFooter {
+    color: var(--dd-muted) !important;
+    font-size: 0.8rem !important;
+    margin-top: 6px !important;
 }
 
-.dashboardTile .sapMNCIconImage {
-    font-size: 1.45rem !important;
+/* Icon chip: tinted square with coloured icon */
+.tileIcon {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    border-radius: 12px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: var(--accent) !important;
+    background: #eef2f7 !important;
+    background: color-mix(in srgb, var(--accent) 18%, #ffffff) !important;
 }
 
-/* =====================================================
-   INDIVIDUAL TILE ACCENT COLOURS
-===================================================== */
-
-.dashboardTileWrapper:nth-child(1) .dashboardTile {
-    border-top-color: #0a6ed1 !important;
+.tileIcon .sapUiIcon {
+    color: inherit !important;
 }
 
-.dashboardTileWrapper:nth-child(2) .dashboardTile {
-    border-top-color: #e9730c !important;
-}
+/* Fallback chip colours for browsers without color-mix */
+.totalIcon    { background: #eaf2ff !important; color: var(--dd-total) !important; }
+.pendingIcon  { background: #fff3e0 !important; color: var(--dd-pending) !important; }
+.approvedIcon,
+.activeIcon   { background: #e4f5ec !important; color: var(--dd-approved) !important; }
+.rejectedIcon { background: #ffeaea !important; color: var(--dd-rejected) !important; }
+.draftIcon    { background: #efedff !important; color: var(--dd-draft) !important; }
+.expiredIcon  { background: #f9eafd !important; color: var(--dd-expired) !important; }
 
-.dashboardTileWrapper:nth-child(3) .dashboardTile {
-    border-top-color: #188918 !important;
-}
-
-.dashboardTileWrapper:nth-child(4) .dashboardTile {
-    border-top-color: #bb0000 !important;
-}
-
-.dashboardTileWrapper:nth-child(5) .dashboardTile {
-    border-top-color: #64748b !important;
-}
-
-.dashboardTileWrapper:nth-child(6) .dashboardTile {
-    border-top-color: #8e44ad !important;
-}
-
-/* =====================================================
-   RECENT DISCOUNT REQUESTS CARD
-===================================================== */
+/* ---------- Recent discount requests panel ---------- */
 
 .dashboardRecent {
     width: 100% !important;
-    max-width: 1400px;
-
-    padding: 14px 18px !important;
+    max-width: 100% !important;
+    padding: 6px 22px 14px !important;
     margin-bottom: 22px !important;
-
     box-sizing: border-box !important;
 
-    background: #ffffff !important;
-
-    border: 1px solid #e1e7ef !important;
-    border-radius: 12px !important;
-
-    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.05) !important;
+    background: var(--dd-surface) !important;
+    border: 1px solid var(--dd-line) !important;
+    border-radius: var(--dd-radius) !important;
+    box-shadow: var(--dd-shadow) !important;
 }
 
-/* =====================================================
-   RECENT REQUESTS TOOLBAR
-===================================================== */
-
 .dashboardRecentToolbar {
-    min-height: 48px !important;
-    padding: 0 4px !important;
-
+    min-height: 58px !important;
+    padding: 0 !important;
     background: transparent !important;
-
-    border-bottom: 1px solid #e5eaf0 !important;
-
-    margin-bottom: 8px !important;
+    border-bottom: 1px solid var(--dd-line) !important;
+    margin-bottom: 0 !important;
 }
 
 .dashboardRecentToolbar .sapMTitle {
-    color: #1d3557 !important;
+    color: var(--dd-ink) !important;
     font-size: 1.1rem !important;
     font-weight: 700 !important;
 }
 
 .dashboardRecentToolbar .sapMBtn .sapMBtnInner {
-    border-radius: 6px !important;
+    border-radius: 8px !important;
     font-weight: 600 !important;
+    color: var(--dd-total) !important;
 }
 
-/* =====================================================
-   RECENT REQUESTS TABLE
-===================================================== */
+.dashboardRecentToolbar .sapMBtn:hover .sapMBtnInner {
+    background: var(--dd-brand-soft) !important;
+}
 
 .dashboardRecent .sapMListTbl {
     width: 100% !important;
-    background: #ffffff !important;
-    border-collapse: collapse !important;
+    background: transparent !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
 }
 
-/* Table header */
-
 .dashboardRecent .sapMListTblHeaderCell {
-    padding: 11px 12px !important;
-    background: #f8fafc !important;
-    border-bottom: 1px solid #e2e8f0 !important;
+    padding: 12px 14px !important;
+    background: var(--dd-bg) !important;
+    border-bottom: 1px solid var(--dd-line) !important;
 }
 
 .dashboardRecent .sapMListTblHeaderCell .sapMText {
-    color: #475467 !important;
-    font-size: 0.85rem !important;
-    font-weight: 700 !important;
-}
-
-/* Table rows */
-
-.dashboardRecent .sapMListTblCell {
-    padding: 12px !important;
-    vertical-align: middle !important;
-    border-bottom: 1px solid #edf0f4 !important;
-}
-
-.dashboardRecent .sapMListTblCell .sapMText {
-    color: #344054 !important;
-    font-size: 0.86rem !important;
-}
-
-/* Request number */
-
-.dashboardRecent .sapMListTblCell:first-child .sapMText {
-    color: #0a6ed1 !important;
+    color: var(--dd-muted) !important;
+    font-size: 0.82rem !important;
     font-weight: 600 !important;
 }
 
-/* Net price */
+.dashboardRecent .sapMListTblCell {
+    padding: 15px 14px !important;
+    vertical-align: middle !important;
+    border-bottom: 1px solid var(--dd-line) !important;
+}
 
-.dashboardRecent .sapMObjectNumberText {
-    color: #1e293b !important;
-    font-size: 0.88rem !important;
+.dashboardRecent .sapMListTblRow:last-child .sapMListTblCell {
+    border-bottom: 0 !important;
+}
+
+.dashboardRecent .sapMListTblCell .sapMText {
+    color: var(--dd-text) !important;
+    font-size: 0.9rem !important;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Request number (cell 1 is UI5's hidden indicator cell, so data starts at 2) */
+.dashboardRecent .sapMListTblCell:nth-child(2) .sapMText {
+    color: var(--dd-brand) !important;
     font-weight: 700 !important;
 }
 
-/* Status */
-
-.dashboardRecent .sapMObjStatus {
-    font-size: 0.82rem !important;
+/* Net price (5th cell) */
+.dashboardRecent .sapMListTblCell:nth-child(5) .sapMText {
+    color: var(--dd-ink) !important;
+    font-weight: 600 !important;
 }
-
-/* Hover */
 
 .dashboardRecent .sapMListTblRow:hover {
-    background: #f8fafc !important;
+    background: #f6f9fe !important;
 }
-
-/* Empty table */
 
 .dashboardRecent .sapMListNoData {
-    color: #64748b !important;
-    padding: 25px !important;
+    color: var(--dd-muted) !important;
+    padding: 28px !important;
 }
 
-/* =====================================================
-   RESPONSIVE - TABLET
-===================================================== */
-
-@media (max-width: 1024px) {
-
-    .dashboardContent {
-        padding: 18px !important;
-    }
-
-    .dashboardTiles {
-        gap: 10px !important;
-    }
-
-    .dashboardTile .sapMGTHdrContent {
-        padding: 10px 8px 2px 8px !important;
-    }
-
-    .dashboardTile .sapMGTHdrTxt {
-        font-size: 0.78rem !important;
-    }
-
-    .dashboardTile .sapMGTSubHdrTxt {
-        font-size: 0.68rem !important;
-    }
-
-    .dashboardTile .sapMNCValue {
-        font-size: 1.5rem !important;
-    }
-
-    .dashboardTile .sapMNCIconImage {
-        font-size: 1.2rem !important;
-    }
-
-    .dashboardRecent {
-        max-width: 100% !important;
-    }
+/* Status as pill with dot */
+.dashboardRecent .sapMObjStatus {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 7px;
+    padding: 3px 12px 3px 10px;
+    border-radius: 999px;
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    background: #eef2f7;
 }
 
+.dashboardRecent .sapMObjStatus::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #66758c;
+}
+
+.dashboardRecent .sapMObjStatusSuccess     { background: #e4f5ec; }
+.dashboardRecent .sapMObjStatusWarning     { background: #fff3e0; }
+.dashboardRecent .sapMObjStatusError       { background: #ffeaea; }
+.dashboardRecent .sapMObjStatusInformation { background: #e8effd; }
+
+.dashboardRecent .sapMObjStatusSuccess::before     { background: #1f8a4f; }
+.dashboardRecent .sapMObjStatusWarning::before     { background: #d97706; }
+.dashboardRecent .sapMObjStatusError::before       { background: #d32f2f; }
+.dashboardRecent .sapMObjStatusInformation::before { background: #2563eb; }
+
+
 /* =====================================================
-   RESPONSIVE - MOBILE
+   4. REQUESTS LIST PAGE  (dr*)
 ===================================================== */
+
+.drPage.sapMPage > section {
+    background: #f3f5f8;
+}
+
+.drContainer {
+    max-width: 96rem;
+    margin: 0 auto;
+    padding: 1.5rem 2rem 2.5rem;
+    box-sizing: border-box;
+}
+
+.drHeader {
+    margin-bottom: 1.25rem;
+}
+
+.drSubtitle {
+    color: #5b6675;
+    margin-top: 0.25rem;
+}
+
+/* Summary tiles: white card, faint tint, coloured left stripe */
+.drKpiRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.125rem;
+    margin-bottom: 1.25rem;
+}
+
+.drKpi {
+    --stripe: #0a6ed1;
+    --tint: #eaf3ff;
+    flex: 1 1 13rem;
+    background: linear-gradient(150deg, var(--tint) 0%, #ffffff 70%);
+    border: 1px solid #dfe4ea;
+    border-left: 5px solid var(--stripe);
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem 1.1rem;
+    box-sizing: border-box;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.drKpiPending  { --stripe: #e9730c; --tint: #fff2df; }
+.drKpiApproved { --stripe: #2b8a4f; --tint: #e7f6ed; }
+.drKpiDraft    { --stripe: #0a6ed1; --tint: #eaf3ff; }
+.drKpiRejected { --stripe: #c62828; --tint: #feebeb; }
+
+.drKpiLabel {
+    color: #3d4a5c;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.drKpiValue {
+    display: block;
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--stripe);
+    margin: 0.3rem 0 0;
+}
+
+/* Small grey helper lines under the number are not shown */
+.drKpiHint {
+    display: none !important;
+}
+
+/* Table card */
+.drCard {
+    background: #ffffff;
+    border: 1px solid #dfe4ea;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+}
+
+.drTableToolbar.sapMTB {
+    background: #ffffff;
+    border-bottom: 1px solid #e8ecf1;
+    border-radius: 0.5rem 0.5rem 0 0;
+    height: 3.5rem;
+}
+
+.drTable .sapMListTblHeaderCell {
+    background: #f7f9fb;
+    color: #4a5565;
+    font-weight: 600;
+}
+
+.drTable .sapMLIB {
+    border-bottom-color: #eef1f5;
+}
+
+.drTable .sapMListTblCell {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+
+/* Compact table: header and rows only as tall as their content */
+.drTable table {
+    height: auto !important;
+    table-layout: auto;
+}
+
+.drTable .sapMListTblHeader,
+.drTable .sapMListTblHeaderCell {
+    height: 2.75rem !important;
+    min-height: 0 !important;
+}
+
+.drTable .sapMListTblHeaderCell {
+    padding: 0.5rem 0.75rem !important;
+    vertical-align: middle;
+    white-space: nowrap;
+    font-size: 0.8125rem;
+}
+
+.drTable .sapMListTblCell {
+    padding: 0.55rem 0.75rem !important;
+    vertical-align: middle;
+}
+
+.drTable .sapMLIB {
+    height: auto !important;
+}
+
+/* Column sizing (1st cell is UI5's hidden indicator cell):
+   2 = Request, 3 = Reason, 4 = Valid from, 5 = Valid to.
+   Request and dates stay on one line; Reason gets a moderate width
+   and long text is cut with "..." */
+.drTable .sapMListTblHeaderCell:nth-child(2),
+.drTable .sapMListTblRow > .sapMListTblCell:nth-child(2) {
+    min-width: 9.5rem;
+    white-space: nowrap;
+}
+
+.drTable .sapMListTblHeaderCell:nth-child(3),
+.drTable .sapMListTblRow > .sapMListTblCell:nth-child(3) {
+    width: 20%;
+    min-width: 12rem;
+    max-width: 17rem;
+}
+
+.drTable .sapMListTblRow > .sapMListTblCell:nth-child(3) .sapMText {
+    display: block;
+    max-width: 17rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap !important;
+}
+
+.drTable .sapMListTblHeaderCell:nth-child(4),
+.drTable .sapMListTblHeaderCell:nth-child(5),
+.drTable .sapMListTblRow > .sapMListTblCell:nth-child(4),
+.drTable .sapMListTblRow > .sapMListTblCell:nth-child(5) {
+    min-width: 7.5rem;
+    white-space: nowrap;
+}
+
+.drAmount {
+    font-variant-numeric: tabular-nums;
+}
+
+.drAmountStrong {
+    font-weight: 600;
+    color: #1d2d3e;
+}
+
+.drStatus.sapMObjStatus {
+    padding: 0.2rem 0.65rem;
+    border-radius: 1rem;
+}
+
+
+/* =====================================================
+   5. DISCOUNT REQUEST OBJECT PAGE  (op*)
+===================================================== */
+
+.opPage {
+    --op-navy: #0f3d7a;
+    --op-navy-soft: #e8f0fb;
+    --op-ink: #1d2d3e;
+    --op-muted: #5b6b7d;
+    --op-line: #e1e7ef;
+    --op-bg: #f3f6fa;
+    --op-green: #1b7f4b;
+    --op-green-soft: #e6f5ec;
+}
+
+.opPage > section,
+.opPage .sapMPageEnableScrolling {
+    background: var(--op-bg);
+}
+
+.opRoot {
+    padding: 1.25rem 1.5rem 2rem;
+    box-sizing: border-box;
+    max-width: 90rem;
+    margin: 0 auto;
+}
+
+/* Hero */
+.opHero {
+    background: linear-gradient(135deg, #0f3d7a 0%, #1f63b5 100%);
+    border-radius: 0.875rem;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+    color: #fff;
+}
+
+.opHeroIcon {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.16);
+    border-radius: 0.75rem;
+    width: 3rem;
+    height: 3rem;
+    line-height: 3rem;
+    text-align: center;
+}
+
+.opHero .opHeroTitle,
+.opHero .opHeroTitle .sapMTitle {
+    color: #fff;
+    margin: 0;
+}
+
+.opHeroSub {
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.875rem;
+}
+
+/* Cards */
+.opCardRow {
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.opCard {
+    background: #fff;
+    border: 1px solid var(--op-line);
+    border-radius: 0.875rem;
+    box-shadow: 0 1px 2px rgba(15, 40, 80, 0.05);
+    padding: 0.25rem 0.5rem 0.75rem;
+    box-sizing: border-box;
+}
+
+.opCardHalf {
+    flex: 1 1 28rem;
+    min-width: 0;
+}
+
+.opCardFull {
+    width: 100%;
+    margin-bottom: 1.25rem;
+    overflow: hidden;
+}
+
+.opCardHeader,
+.opCardToolbar.sapMTB {
+    padding: 0.75rem 1rem 0.25rem;
+    min-height: 3rem;
+    background: transparent;
+    border-bottom: 0;
+}
+
+.opCardHeader .sapMTitle,
+.opCardToolbar .sapMTitle {
+    color: var(--op-ink);
+    font-weight: 600;
+}
+
+.opCardIcon {
+    color: var(--op-navy);
+    background: var(--op-navy-soft);
+    border-radius: 0.5rem;
+    width: 2rem;
+    height: 2rem;
+    line-height: 2rem;
+    text-align: center;
+    margin-right: 0.625rem;
+    font-size: 1rem;
+}
+
+.opCard .sapUiFormResponsiveGridLayout label,
+.opCard .sapMLabel {
+    color: var(--op-muted);
+    font-weight: 500;
+}
+
+.opCard .sapMInputBase,
+.opCard .sapMSlt,
+.opCard .sapMTextArea {
+    border-radius: 0.5rem;
+}
+
+/* Line items table */
+.opTable.sapMListTbl {
+    background: transparent;
+}
+
+.opTable,
+.opTable table {
+    width: 100% !important;
+    table-layout: auto;
+}
+
+.opTable .sapMListTblHeader .sapMListTblCell {
+    background: #f7f9fc;
+    color: var(--op-muted);
+    font-weight: 600;
+    border-bottom: 1px solid var(--op-line);
+}
+
+.opTable .sapMLIB {
+    border-bottom: 1px solid var(--op-line);
+}
+
+.opTable .sapMLIB:hover {
+    background: #f7faff;
+}
+
+.opTable .sapMListTblCell {
+    vertical-align: middle;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.opTable .sapMInputBase,
+.opTable .sapMSlt {
+    min-width: 0;
+}
+
+.opNetPrice {
+    font-weight: 700;
+    color: var(--op-navy);
+    font-size: 1rem;
+}
+
+/* Price summary tiles */
+.opKpiRow {
+    gap: 1.25rem;
+}
+
+.opKpi {
+    flex: 1 1 14rem;
+    background: #fff;
+    border: 1px solid var(--op-line);
+    border-radius: 0.875rem;
+    padding: 1rem 1.25rem;
+    box-sizing: border-box;
+}
+
+.opKpi .sapMLabel {
+    color: var(--op-muted);
+    font-weight: 500;
+}
+
+.opKpiInput.sapMInput,
+.opKpiInput .sapMInputBase,
+.opKpiInput .sapMInputBaseInner {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--op-ink);
+    padding-left: 0;
+}
+
+.opKpiInput .sapMInputBaseContentWrapper {
+    background: transparent !important;
+    border: 0 !important;
+}
+
+.opKpiDiscount {
+    background: var(--op-green-soft);
+    border-color: #cbe8d6;
+}
+
+.opKpiDiscount .opKpiInput .sapMInputBaseInner {
+    color: var(--op-green);
+}
+
+.opKpiNet {
+    background: var(--op-navy);
+    border-color: var(--op-navy);
+}
+
+.opKpiNet .sapMLabel {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.opKpiNet .opKpiInput .sapMInputBaseInner {
+    color: #fff;
+}
+
+.opPage .sapMPageFooter .sapMTB {
+    border-top: 1px solid var(--op-line);
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 1100px) {
+    .dashboardTileCard {
+        flex-basis: calc(50% - 18px);
+    }
+}
 
 @media (max-width: 600px) {
-
     .dashboardContent {
-        padding: 12px !important;
+        padding: 16px 12px 28px !important;
     }
 
     .dashboardHeading {
-        font-size: 1.25rem !important;
-    }
-
-    .dashboardDescription {
-        font-size: 0.82rem !important;
+        font-size: 1.3rem !important;
     }
 
     .dashboardTiles {
-        flex-wrap: nowrap !important;
-        overflow-x: auto !important;
-        gap: 10px !important;
-        padding-bottom: 8px !important;
+        gap: 12px !important;
     }
 
-    .dashboardTileWrapper {
-        flex: 0 0 155px !important;
-        width: 155px !important;
-        min-width: 155px !important;
+    .dashboardTileCard {
+        flex-basis: 100%;
+        min-width: 100%;
+        min-height: 140px;
     }
 
-    .dashboardTile {
-        height: 8.5rem !important;
-        min-height: 8.5rem !important;
+    .tileNumber {
+        font-size: 2.1rem !important;
     }
 
     .dashboardRecent {
-        padding: 8px !important;
-    }
-
-    .dashboardRecentToolbar .sapMTitle {
-        font-size: 0.95rem !important;
+        padding: 4px 10px 10px !important;
     }
 
     .dashboardRecent .sapMListTblCell,
     .dashboardRecent .sapMListTblHeaderCell {
-        padding: 8px !important;
+        padding: 10px 8px !important;
     }
 
     .dashboardRecent .sapMListTblCell .sapMText {
-        font-size: 0.75rem !important;
+        font-size: 0.78rem !important;
+    }
+
+    .drContainer {
+        padding: 1rem;
+    }
+
+    .opRoot {
+        padding: 0.75rem;
+    }
+
+    .opHero {
+        padding: 1rem;
     }
 }
 
-/* =====================================================
-   SMALL MOBILE
-===================================================== */
-
-@media (max-width: 380px) {
-
-    .dashboardTileWrapper {
-        flex: 0 0 145px !important;
-        width: 145px !important;
-        min-width: 145px !important;
+@media (prefers-reduced-motion: reduce) {
+    .appSideNav :is([role="treeitem"], .sapTntNLIFirstLevel) {
+        transition: none;
     }
 }

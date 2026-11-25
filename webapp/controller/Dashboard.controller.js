@@ -16,16 +16,23 @@ sap.ui.define([
         "discountrequest.controller.Dashboard",
         {
 
+            // =========================================
+            // INITIALIZE DASHBOARD
+            // =========================================
+
             onInit: function () {
 
                 var oDashboardModel = new JSONModel({
+
                     total: 0,
                     pending: 0,
-                    active: 0,
+                    approved: 0,
                     rejected: 0,
                     draft: 0,
                     expired: 0,
+
                     recentRequests: []
+
                 });
 
                 this.getView().setModel(
@@ -35,6 +42,11 @@ sap.ui.define([
 
                 this.loadDashboard();
             },
+
+
+            // =========================================
+            // LOAD DASHBOARD DATA
+            // =========================================
 
             loadDashboard: function () {
 
@@ -59,9 +71,11 @@ sap.ui.define([
 
                 var oNumberFormat =
                     NumberFormat.getFloatInstance({
+
                         minFractionDigits: 2,
                         maxFractionDigits: 2,
                         groupingEnabled: true
+
                     });
 
                 var oListBinding = oModel.bindList(
@@ -82,11 +96,13 @@ sap.ui.define([
                     }
                 );
 
+
                 oListBinding.requestContexts(0, 1000)
 
                     .then(function (aContexts) {
 
                         var aRequests = aContexts.map(
+
                             function (oContext) {
 
                                 var oRequest =
@@ -114,9 +130,13 @@ sap.ui.define([
                                 return oRequest;
 
                             }.bind(this)
+
                         );
 
-                        // Sort by latest request date
+
+                        // =================================
+                        // SORT BY LATEST REQUEST DATE
+                        // =================================
 
                         aRequests.sort(function (a, b) {
 
@@ -132,38 +152,53 @@ sap.ui.define([
 
                         });
 
-                        // Calculate request counts
+
+                        // =================================
+                        // CALCULATE REQUEST COUNTS
+                        // =================================
 
                         var oCounts = {
+
                             total: aRequests.length,
                             pending: 0,
-                            active: 0,
+                            approved: 0,
                             rejected: 0,
                             draft: 0,
                             expired: 0
+
                         };
+
 
                         aRequests.forEach(function (oRequest) {
 
                             switch (oRequest.status) {
 
                                 case "Draft":
+
                                     oCounts.draft++;
                                     break;
 
+
                                 case "PendingApproval":
+
                                     oCounts.pending++;
                                     break;
 
-                                case "Active":
-                                    oCounts.active++;
+
+                                case "Approved":
+
+                                    oCounts.approved++;
                                     break;
 
+
                                 case "Rejected":
+
                                     oCounts.rejected++;
                                     break;
 
+
                                 case "Expired":
+
                                     oCounts.expired++;
                                     break;
 
@@ -171,7 +206,10 @@ sap.ui.define([
 
                         });
 
-                        // Update dashboard model
+
+                        // =================================
+                        // UPDATE DASHBOARD MODEL
+                        // =================================
 
                         oDashboardModel.setData({
 
@@ -179,7 +217,7 @@ sap.ui.define([
 
                             pending: oCounts.pending,
 
-                            active: oCounts.active,
+                            approved: oCounts.approved,
 
                             rejected: oCounts.rejected,
 
@@ -191,6 +229,13 @@ sap.ui.define([
                                 aRequests.slice(0, 5)
 
                         });
+
+
+                        console.log(
+                            "Dashboard counts:",
+                            oCounts
+                        );
+
 
                     }.bind(this))
 
@@ -209,20 +254,32 @@ sap.ui.define([
 
             },
 
+
+            // =========================================
+            // STATUS TEXT
+            // =========================================
+
             getStatusText: function (sStatus) {
 
                 var oStatusTexts = {
+
                     PendingApproval: "Pending Approval",
                     Draft: "Draft",
                     Approved: "Approved",
                     Rejected: "Rejected",
                     Active: "Active",
                     Expired: "Expired"
+
                 };
 
                 return oStatusTexts[sStatus] || sStatus || "Unknown";
 
             },
+
+
+            // =========================================
+            // STATUS COLORS
+            // =========================================
 
             getStatusState: function (sStatus) {
 
@@ -230,23 +287,38 @@ sap.ui.define([
 
                     case "Active":
                     case "Approved":
+
                         return "Success";
 
+
                     case "PendingApproval":
+
                         return "Warning";
+
 
                     case "Rejected":
                     case "Expired":
+
                         return "Error";
 
+
                     case "Draft":
+
                         return "Information";
 
+
                     default:
+
                         return "None";
+
                 }
 
             },
+
+
+            // =========================================
+            // VIEW ALL REQUESTS
+            // =========================================
 
             onViewAllRequests: function () {
 

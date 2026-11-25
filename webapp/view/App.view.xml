@@ -1,4 +1,3 @@
-
 <mvc:View
     controllerName="discountrequest.controller.App"
     displayBlock="true"
@@ -9,7 +8,7 @@
     <tnt:ToolPage id="toolPage">
 
         <tnt:header>
-            <tnt:ToolHeader id="_IDGenToolHeader">
+            <tnt:ToolHeader id="_IDGenToolHeader" class="appHeader">
                 <Button id="_IDGenButton2"
                     icon="sap-icon://menu2"
                     type="Transparent"
@@ -20,14 +19,13 @@
                     level="H2"/>
 
                 <ToolbarSpacer id="_IDGenToolbarSpacer1"/>
-
-            
             </tnt:ToolHeader>
         </tnt:header>
 
         <tnt:sideContent>
             <tnt:SideNavigation
                 id="sideNavigation"
+                class="appSideNav"
                 expanded="true">
 
                 <tnt:NavigationList id="_IDGenNavigationList"
